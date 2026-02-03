@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Calorie Care App</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Prompt', sans-serif;
+  background: #fffdf6;
+  padding: 20px;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+h1, h2 {
+  text-align: center;
+  color: #bfa43a;
+}
+
+.section-title {
+  color: #bfa43a;
+  margin-bottom: 8px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 4px;
+  border-radius: 10px;
+  border: 1px solid #eee1a8;
+  font-family: 'Prompt', sans-serif;
+  font-size: 14px;
+}
+
+/* ซ่อนลูกศรช่องตัวเลข */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* select ให้เหมือน input */
+select {
+  appearance: none;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23bfa43a' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #f2e8b6;
+  border: none;
+  border-radius: 15px;
+  margin-top: 10px;
+  font-family: 'Prompt', sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.hidden { display: none; }
+
+.error {
+  border: 1.5px solid #e06666;
+  background-color: #fff5f5;
+}
+
+.error-text {
+  color: #e06666;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: none;
+}
+
+ul { padding: 0; }
+
+li {
+  list-style: none;
+  background: #fff9db;
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-btn {
+  background: #f4cccc;
+  border: none;
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.result-box {
+  background: #fff9db;
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+/* ลูกศรย้อนกลับ */
+.back-arrow {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 22px;
+  color: #bfa43a;
+  cursor: pointer;
+  user-select: none;
+}
+.back-arrow:hover {
+  opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- ข้อมูลผู้ใช้ -->
+<div id="register">
+<h1>แอปบันทึกอาหารและแคลอรี่</h1>
+
+<div class="section-title">ข้อมูลผู้ใช้</div>
+
+<input id="username" placeholder="ชื่อผู้ใช้">
+<div id="err-username" class="error-text">ช่องนี้ยังไม่กรอก</div>
+
+<select id="gender">
+  <option value="">เลือกเพศ</option>
+  <option value="male">ชาย</option>
+  <option value="female">หญิง</option>
+</select>
+<div id="err-gender" class="error-text">ช่องนี้ยังไม่กรอก</div>
+
+<input id="age" type="number" placeholder="อายุ">
+<div id="err-age" class="error-text">ช่องนี้ยังไม่กรอก</div>
+
+<input id="weight" type="number" placeholder="น้ำหนัก (กก.)">
+<div id="err-weight" class="error-text">ช่องนี้ยังไม่กรอก</div>
+
+<input id="height" type="number" placeholder="ส่วนสูง (ซม.)">
+<div id="err-height" class="error-text">ช่องนี้ยังไม่กรอก</div>
+
+<button onclick="playSound(); saveUser()">เริ่มบันทึกอาหาร</button>
+</div>
+
+<!-- บันทึกอาหาร -->
+<div id="foodPage" class="hidden">
+<h2>บันทึกอาหาร</h2>
+
+<select id="food">
+  <option value="">เลือกอาหาร</option>
+  <option value="300">ข้าวไข่เจียว</option>
+  <option value="500">ผัดกะเพรา</option>
+  <option value="400">ก๋วยเตี๋ยว</option>
+  <option value="250">ข้าวผัด</option>
+  <option value="150">นม</option>
+</select>
+
+<button onclick="playSound(); saveFood()">บันทึกอาหาร</button>
+
+<ul id="foodList"></ul>
+
+<p>แคลอรี่สะสมวันนี้: <b><span id="total">0</span> kcal</b></p>
+
+<button onclick="playSound(); showSummary()">ดูสรุปผลวันนี้</button>
+</div>
+
+<!-- สรุปผล -->
+<div id="summaryPage" class="hidden">
+<div class="back-arrow" onclick="playSound(); backToFood()">←</div>
+
+<h2>สรุปผลพลังงานวันนี้</h2>
+
+<div class="result-box">
+  <p>พลังงานที่ได้รับ: <b><span id="eatCal"></span></b> kcal</p>
+  <p>พลังงานที่เหมาะสม: <b><span id="needCal"></span></b> kcal</p>
+  <h3 id="resultText"></h3>
+</div>
+</div>
+
+</div>
+
+<script>
+/* ---------- เสียง ---------- */
+let audioCtx = null;
+function playSound() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.frequency.value = 600;
+  gain.gain.value = 0.08;
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.12);
+}
+
+/* ---------- ตัวแปร ---------- */
+let foods = [];
+let totalCal = 0;
+let dailyNeed = 0;
+
+/* ---------- บันทึกผู้ใช้ (รีเซ็ตอาหารทุกครั้ง) ---------- */
+function saveUser() {
+  const fields = ["username", "gender", "age", "weight", "height"];
+  let valid = true;
+
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    const err = document.getElementById("err-" + id);
+    if (!el.value) {
+      el.classList.add("error");
+      err.style.display = "block";
+      valid = false;
+    } else {
+      el.classList.remove("error");
+      err.style.display = "none";
+    }
+  });
+
+  if (!valid) return;
+
+  /* รีเซ็ตข้อมูลอาหาร */
+  foods = [];
+  totalCal = 0;
+  foodList.innerHTML = "";
+  total.innerText = "0";
+
+  const g = gender.value;
+  const w = +weight.value;
+  const h = +height.value;
+  const a = +age.value;
+
+  dailyNeed = g === "male"
+    ? 66 + (13.7*w) + (5*h) - (6.8*a)
+    : 655 + (9.6*w) + (1.8*h) - (4.7*a);
+
+  register.classList.add("hidden");
+  foodPage.classList.remove("hidden");
+}
+
+/* ---------- บันทึกอาหาร ---------- */
+function saveFood() {
+  const food = document.getElementById("food");
+  if (!food.value) return;
+
+  const name = food.options[food.selectedIndex].text;
+  const cal = Number(food.value);
+
+  foods.push({ name, cal });
+  totalCal += cal;
+
+  addFoodToList(name, cal);
+  total.innerText = totalCal;
+  food.value = "";
+}
+
+function addFoodToList(name, cal) {
+  const li = document.createElement("li");
+  li.innerHTML = `${name} (${cal} kcal)
+    <button class="delete-btn" onclick="removeFood(this, ${cal})">ลบ</button>`;
+  foodList.appendChild(li);
+}
+
+function removeFood(btn, cal) {
+  totalCal -= cal;
+  btn.parentElement.remove();
+  total.innerText = totalCal;
+}
+
+/* ---------- สรุปผล ---------- */
+function showSummary() {
+  foodPage.classList.add("hidden");
+  summaryPage.classList.remove("hidden");
+  eatCal.innerText = Math.round(totalCal);
+  needCal.innerText = Math.round(dailyNeed);
+
+  const diff = totalCal - dailyNeed;
+  resultText.innerText =
+    diff < -200 ? "พลังงานที่ได้รับน้อยเกินไป"
+    : diff > 200 ? "พลังงานที่ได้รับมากเกินไป"
+    : "พลังงานที่ได้รับเหมาะสม";
+}
+
+function backToFood() {
+  summaryPage.classList.add("hidden");
+  foodPage.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
