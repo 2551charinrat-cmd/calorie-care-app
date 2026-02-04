@@ -2,7 +2,17 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Calorie Care App</title>
+
+<!-- ทำให้เป็นแอป ไม่เด้งไปเว็บ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Calorie Care">
+
+<!-- ไอคอนแอป -->
+<link rel="apple-touch-icon" href="icon.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500&display=swap" rel="stylesheet">
 
@@ -43,7 +53,6 @@ input, select {
   font-size: 14px;
 }
 
-/* ซ่อนลูกศรช่องตัวเลข */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -53,7 +62,6 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* select ให้เหมือน input */
 select {
   appearance: none;
   background-color: #fff;
@@ -117,7 +125,6 @@ li {
   text-align: center;
 }
 
-/* ลูกศรย้อนกลับ */
 .back-arrow {
   position: absolute;
   top: 15px;
@@ -136,7 +143,6 @@ li {
 <body>
 <div class="container">
 
-<!-- ข้อมูลผู้ใช้ -->
 <div id="register">
 <h1>แอปบันทึกอาหารและแคลอรี่</h1>
 
@@ -164,7 +170,6 @@ li {
 <button onclick="playSound(); saveUser()">เริ่มบันทึกอาหาร</button>
 </div>
 
-<!-- บันทึกอาหาร -->
 <div id="foodPage" class="hidden">
 <h2>บันทึกอาหาร</h2>
 
@@ -186,7 +191,6 @@ li {
 <button onclick="playSound(); showSummary()">ดูสรุปผลวันนี้</button>
 </div>
 
-<!-- สรุปผล -->
 <div id="summaryPage" class="hidden">
 <div class="back-arrow" onclick="playSound(); backToFood()">←</div>
 
@@ -202,7 +206,6 @@ li {
 </div>
 
 <script>
-/* ---------- เสียง ---------- */
 let audioCtx = null;
 function playSound() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -217,12 +220,10 @@ function playSound() {
   osc.stop(audioCtx.currentTime + 0.12);
 }
 
-/* ---------- ตัวแปร ---------- */
 let foods = [];
 let totalCal = 0;
 let dailyNeed = 0;
 
-/* ---------- บันทึกผู้ใช้ (รีเซ็ตอาหารทุกครั้ง) ---------- */
 function saveUser() {
   const fields = ["username", "gender", "age", "weight", "height"];
   let valid = true;
@@ -242,7 +243,6 @@ function saveUser() {
 
   if (!valid) return;
 
-  /* รีเซ็ตข้อมูลอาหาร */
   foods = [];
   totalCal = 0;
   foodList.innerHTML = "";
@@ -261,7 +261,6 @@ function saveUser() {
   foodPage.classList.remove("hidden");
 }
 
-/* ---------- บันทึกอาหาร ---------- */
 function saveFood() {
   const food = document.getElementById("food");
   if (!food.value) return;
@@ -290,7 +289,6 @@ function removeFood(btn, cal) {
   total.innerText = totalCal;
 }
 
-/* ---------- สรุปผล ---------- */
 function showSummary() {
   foodPage.classList.add("hidden");
   summaryPage.classList.remove("hidden");
